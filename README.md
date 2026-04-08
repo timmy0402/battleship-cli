@@ -258,12 +258,11 @@ All classes are in the default package (no package declarations).
 
 Potential improvements for future versions:
 
-- Input validation for shot coordinates to prevent `ArrayIndexOutOfBoundsException`
 - Computer AI with hunt-and-destroy logic for more challenging gameplay
 - Support for custom fleet configurations
 - Game state persistence (save/load games)
 - Multiplayer support (local or network)
-- GUI using Swing or JavaFX
+
 
 ---
 
