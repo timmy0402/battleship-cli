@@ -15,7 +15,6 @@ public class BattleshipGame {
 
             // User input for menu option
             userChoice = userInput.nextInt();
-            char choose;
 
             // Switch case for menu options
             switch (userChoice) {

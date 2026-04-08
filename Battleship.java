@@ -171,6 +171,30 @@ public class Battleship {
     }
 
     /**
+     * Setter for the alls symbol.
+     * 
+     * @param userWater The new water symbol chosen by the user.
+     */
+    public void setSymbol(String symbolType, char chosenSymbol){
+        switch (symbolType) {
+            case "water":
+                setWater(chosenSymbol);
+                break;
+            case "ship":
+                setShip(chosenSymbol);
+                break;
+            case "hit":
+                setHit(chosenSymbol);
+                break;
+            case "miss":
+                setMiss(chosenSymbol);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Setter for the water symbol.
      * 
      * @param userWater The new water symbol chosen by the user.
@@ -287,5 +311,26 @@ public class Battleship {
      */
     public int getSize() {
         return size;
+    }
+    
+    /**
+     * Getter for the symbol of the selected object.
+     * 
+     * @return The current symbol of the selected object.
+     */
+    public char getSymbol(String symbolType){
+        switch (symbolType) {
+            case "water":
+                return water;
+            case "ship":
+                return ship;
+            case "hit":
+                return hit;
+            case "miss":
+                return miss;
+            default:
+                return 'c';
+        }
+         
     }
 }
