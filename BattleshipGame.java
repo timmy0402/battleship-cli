@@ -1,5 +1,10 @@
 import java.util.*;
 
+/**
+ * Entry point and UI for the Battleship game.
+ * Contains the main menu loop, board printing, and delegates
+ * all game logic to the Battleship engine class.
+ */
 public class BattleshipGame {
     public static void main(String[] args) {
         // Initialization
@@ -25,7 +30,7 @@ public class BattleshipGame {
                     // Play the game
                     playGame(userInput, rand, game);
                     break;
-                // would be on the adjust function
+                // Adjust symbol cases
                 case 2:
                 case 3:
                 case 4:
@@ -38,8 +43,8 @@ public class BattleshipGame {
                     adjustSize(game, userInput);
                     break;
                 case 7:
-                    // Adjust number of ships
-                    adjustNumberOfShips(game, userInput);
+                    // View fleet information
+                    viewFleetInfo(game);
                     break;
                 default:
                     System.out.println("Option not exist");
@@ -48,33 +53,49 @@ public class BattleshipGame {
         } while (userChoice != 0);
     }
 
+    /**
+     * Runs a full game session: sets up boards, places ships,
+     * alternates user and computer shots until one fleet is sunk.
+     *
+     * @param userInput Scanner for reading user input.
+     * @param rand      Random object for computer decisions.
+     * @param game      The Battleship game engine instance.
+     */
     private static void playGame(Scanner userInput, Random rand, Battleship game) {
         // Initialize game boards
         char[][] userboard = game.CreateGameBoard();
         char[][] comboard = game.CreateGameBoard();
 
-        // Display initial boards
+        // Display initial empty boards
         System.out.println("This is your board");
         printboard(userboard);
         System.out.println("This is computer's board");
         printboard(comboard);
 
-        // Setup user's ships
-        game.createCoordinate();
-        System.out.println("Enter your ship(s) coordinate (start at 0) in the form of (x y x y ...)");
-        game.userCoor(userInput, userboard);
+        // Place ships: computer randomly, user via input
+        game.placeComputerShips(comboard);
 
-        // Display updated boards with user's ships
+        System.out.println("=== Place your ships ===");
+        game.placeUserShips(userInput, userboard);
+
+        // Display boards after ship placement
         System.out.println("This is your board");
         printboard(userboard);
         System.out.println("This is computer's board");
         printboard(comboard);
 
-        // Game loop for user and computer shots
+        // Game loop: alternate user and computer shots
         do {
-            System.out.println("What coordinate do you want to shoot? (x y)");
+            System.out.println("What coordinate do you want to shoot? (col row)");
             int x = userInput.nextInt();
             int y = userInput.nextInt();
+
+            while (x >= game.getSize() || y >= game.getSize()) {
+                System.out.println("Invalid shot coordinates. Try again");
+                System.out.println("What coordinate do you want to shoot? (col row)");
+                x = userInput.nextInt();
+                y = userInput.nextInt();
+            }
 
             System.out.print("Your shot: ");
             game.shotUser(x, y, comboard);
@@ -82,32 +103,49 @@ public class BattleshipGame {
             game.shotComp(userboard, rand);
 
             // Display updated boards after shots
-            System.out.println("This is your board");
+            System.out.println("\nThis is your board");
             printboard(userboard);
             System.out.println("This is computer's board");
             printboard(comboard);
-            System.out.println();
+
+            // Show remaining ship counts
+            System.out.printf("Your ships remaining: %d | Computer's ships remaining: %d%n%n",
+                    game.getShipUser(), game.getShipCom());
         } while (!game.check());
 
-        // Display game end message
-        System.out.println("The game has ended\n");
+        // Display game result
+        String winner = game.getWinner();
+        if ("User".equals(winner)) {
+            System.out.println("Congratulations! You sunk the entire enemy fleet!\n");
+        } else {
+            System.out.println("The computer sunk your entire fleet. Better luck next time!\n");
+        }
     }
 
+    /**
+     * Displays the main menu options to the user.
+     */
     private static void displayMenu() {
-        // Display menu options
         System.out.println("Play game (1)");
         System.out.println("Adjust water icon (2)");
         System.out.println("Adjust ship icon (3)");
         System.out.println("Adjust hit icon (4)");
         System.out.println("Adjust miss icon (5)");
-        System.out.println("Adjust board size icon (6)");
-        System.out.println("Adjust number of ships icon (7)");
+        System.out.println("Adjust board size (6)");
+        System.out.println("View fleet info (7)");
         System.out.println("Exit (0)");
         System.out.print("What is your choice? ");
     }
 
+    /**
+     * Adjusts one of the board symbols (water, ship, hit, or miss)
+     * based on user input.
+     *
+     * @param userChoice The menu option (2-5) indicating which symbol.
+     * @param game       The Battleship game engine instance.
+     * @param userInput  Scanner for reading user input.
+     */
     private static void adjustSymbol(int userChoice, Battleship game, Scanner userInput) {
-        // Adjust water, ship, hit, or miss symbol
         String symbolType = switch (userChoice) {
             case 2 -> "water";
             case 3 -> "ship";
@@ -123,8 +161,14 @@ public class BattleshipGame {
         System.out.println();
     }
 
+    /**
+     * Adjusts the board size based on user input.
+     * Warns if the chosen size is too small for the standard fleet.
+     *
+     * @param game      The Battleship game engine instance.
+     * @param userInput Scanner for reading user input.
+     */
     private static void adjustSize(Battleship game, Scanner userInput) {
-        // Adjust board size
         System.out.printf("Current size: %s%n", game.getSize());
         System.out.print("What size do you choose? ");
         int size = userInput.nextInt();
@@ -132,19 +176,38 @@ public class BattleshipGame {
         System.out.println();
     }
 
-    private static void adjustNumberOfShips(Battleship game, Scanner userInput) {
-        // Adjust number of ships
-        System.out.printf("Current number: %s%n", game.getShipCom());
-        System.out.print("How many ships? ");
-        int ship = userInput.nextInt();
-        game.setShip(ship);
-        System.out.println();
+    /**
+     * Displays the standard fleet composition: each ship's name and size.
+     *
+     * @param game The Battleship game engine instance.
+     */
+    private static void viewFleetInfo(Battleship game) {
+        System.out.println("\n=== Standard Fleet ===");
+        for (Ship s : game.getFleetInfo()) {
+            System.out.printf("  %-12s  %d cells%n", s.getName(), s.getSize());
+        }
+        System.out.printf("  Total fleet:   5 ships, 17 cells%n%n");
     }
 
+    /**
+     * Prints the game board with row and column labels.
+     * Column numbers are printed across the top, and
+     * row numbers are printed along the left side.
+     *
+     * @param board The game board to print.
+     */
     public static void printboard(char[][] board) {
-        // Print the game board
-        for (char[] row : board) {
-            for (char cell : row) {
+        // Print column header
+        System.out.print("  ");
+        for (int col = 0; col < board[0].length; col++) {
+            System.out.printf("%2d", col);
+        }
+        System.out.println();
+
+        // Print each row with its row number
+        for (int row = 0; row < board.length; row++) {
+            System.out.printf("%2d", row);
+            for (char cell : board[row]) {
                 System.out.printf("%2s", cell);
             }
             System.out.println();
