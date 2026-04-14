@@ -8,7 +8,15 @@ import java.util.*;
 public class BattleshipGame {
     public static void main(String[] args) {
         // Initialization
-        System.out.println("Welcome to Battleship!");
+        System.out.println(Color.ANSI_BLUE + "██████╗  █████╗ ████████╗████████╗██╗     ███████╗███████╗██╗  ██╗██╗██████╗ ");
+        System.out.println("██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝██╔════╝██║  ██║██║██╔══██╗");
+        System.out.println("██████╔╝███████║   ██║      ██║   ██║     █████╗  ███████╗███████║██║██████╔╝");
+        System.out.println("██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝  ╚════██║██╔══██║██║██╔═══╝ ");
+        System.out.println("██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗███████║██║  ██║██║██║");
+        System.out.println("╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝" + Color.ANSI_RESET);
+
+        System.out.println(Color.ANSI_CYAN + "Welcome to Battleship!" + Color.ANSI_RESET);
+
         Scanner userInput = new Scanner(System.in);
         Random rand = new Random();
         Battleship game = new Battleship();
@@ -24,7 +32,7 @@ public class BattleshipGame {
             // Switch case for menu options
             switch (userChoice) {
                 case 0:
-                    System.out.println("Exit, See you again!");
+                    System.out.println(Color.ANSI_CYAN + "Exit, See you again!" + Color.ANSI_RESET);
                     break;
                 case 1:
                     // Play the game
@@ -47,7 +55,7 @@ public class BattleshipGame {
                     viewFleetInfo(game);
                     break;
                 default:
-                    System.out.println("Option not exist");
+                    System.out.println(Color.ANSI_RED + "Option not exist" + Color.ANSI_RESET);
             }
 
         } while (userChoice != 0);
@@ -67,32 +75,32 @@ public class BattleshipGame {
         char[][] comboard = game.CreateGameBoard();
 
         // Display initial empty boards
-        System.out.println("This is your board");
+        System.out.println(Color.ANSI_GREEN + "This is your board" + Color.ANSI_RESET);
         printboard(userboard);
-        System.out.println("This is computer's board");
+        System.out.println(Color.ANSI_RED + "This is computer's board" + Color.ANSI_RESET);
         printboard(comboard);
 
         // Place ships: computer randomly, user via input
         game.placeComputerShips(comboard);
 
-        System.out.println("=== Place your ships ===");
+        System.out.println(Color.ANSI_PURPLE + "=== Place your ships ===" + Color.ANSI_RESET);
         game.placeUserShips(userInput, userboard);
 
         // Display boards after ship placement
-        System.out.println("This is your board");
+        System.out.println(Color.ANSI_GREEN + "This is your board" + Color.ANSI_RESET);
         printboard(userboard);
-        System.out.println("This is computer's board");
+        System.out.println(Color.ANSI_RED + "This is computer's board" + Color.ANSI_RESET);
         printboard(comboard);
 
         // Game loop: alternate user and computer shots
         do {
-            System.out.println("What coordinate do you want to shoot? (col row)");
+            System.out.println(Color.ANSI_YELLOW + "What coordinate do you want to shoot? (col row)" + Color.ANSI_RESET);
             int x = userInput.nextInt();
             int y = userInput.nextInt();
 
-            while (x >= game.getSize() || y >= game.getSize()) {
-                System.out.println("Invalid shot coordinates. Try again");
-                System.out.println("What coordinate do you want to shoot? (col row)");
+            while (x >= game.getSize() || y >= game.getSize() || x < 0 || y < 0) {
+                System.out.println(Color.ANSI_RED + "Invalid shot coordinates. Try again" + Color.ANSI_RESET);
+                System.out.println(Color.ANSI_YELLOW + "What coordinate do you want to shoot? (col row)" + Color.ANSI_RESET);
                 x = userInput.nextInt();
                 y = userInput.nextInt();
             }
@@ -105,20 +113,21 @@ public class BattleshipGame {
             // Display updated boards after shots
             System.out.println("\nThis is your board");
             printboard(userboard);
-            System.out.println("This is computer's board");
+            System.out.println(Color.ANSI_RED + "This is computer's board" + Color.ANSI_RESET);
             printboard(comboard);
 
             // Show remaining ship counts
-            System.out.printf("Your ships remaining: %d | Computer's ships remaining: %d%n%n",
+            System.out.printf(Color.ANSI_CYAN + "Your ships remaining: %d" + Color.ANSI_RESET
+                    + " | " + Color.ANSI_RED + "Computer's ships remaining: %d" + Color.ANSI_RESET + "%n%n",
                     game.getShipUser(), game.getShipCom());
         } while (!game.check());
 
         // Display game result
         String winner = game.getWinner();
         if ("User".equals(winner)) {
-            System.out.println("Congratulations! You sunk the entire enemy fleet!\n");
+            System.out.println(Color.ANSI_GREEN + "Congratulations! You sunk the entire enemy fleet!" + Color.ANSI_RESET + "\n");
         } else {
-            System.out.println("The computer sunk your entire fleet. Better luck next time!\n");
+            System.out.println(Color.ANSI_RED + "The computer sunk your entire fleet. Better luck next time!" + Color.ANSI_RESET + "\n");
         }
     }
 
@@ -126,15 +135,15 @@ public class BattleshipGame {
      * Displays the main menu options to the user.
      */
     private static void displayMenu() {
-        System.out.println("Play game (1)");
-        System.out.println("Adjust water icon (2)");
-        System.out.println("Adjust ship icon (3)");
-        System.out.println("Adjust hit icon (4)");
-        System.out.println("Adjust miss icon (5)");
-        System.out.println("Adjust board size (6)");
-        System.out.println("View fleet info (7)");
-        System.out.println("Exit (0)");
-        System.out.print("What is your choice? ");
+        System.out.println(Color.ANSI_GREEN + "Play game (1)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "Adjust water icon (2)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "Adjust ship icon (3)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "Adjust hit icon (4)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "Adjust miss icon (5)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "Adjust board size (6)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_CYAN + "View fleet info (7)" + Color.ANSI_RESET);
+        System.out.println(Color.ANSI_RED + "Exit (0)" + Color.ANSI_RESET);
+        System.out.print(Color.ANSI_YELLOW + "What is your choice? " + Color.ANSI_RESET);
     }
 
     /**
@@ -182,17 +191,19 @@ public class BattleshipGame {
      * @param game The Battleship game engine instance.
      */
     private static void viewFleetInfo(Battleship game) {
-        System.out.println("\n=== Standard Fleet ===");
+        System.out.println("\n" + Color.ANSI_PURPLE + "=== Standard Fleet ===" + Color.ANSI_RESET);
         for (Ship s : game.getFleetInfo()) {
-            System.out.printf("  %-12s  %d cells%n", s.getName(), s.getSize());
+            System.out.printf("  " + Color.ANSI_GREEN + "%-12s" + Color.ANSI_RESET + "  %d cells%n", s.getName(), s.getSize());
         }
-        System.out.printf("  Total fleet:   5 ships, 17 cells%n%n");
+        System.out.printf(Color.ANSI_CYAN + "  Total fleet:   5 ships, 17 cells" + Color.ANSI_RESET + "%n%n");
     }
 
     /**
      * Prints the game board with row and column labels.
      * Column numbers are printed across the top, and
      * row numbers are printed along the left side.
+     * Cells are color-coded: cyan for water, green for ships,
+     * red for hits, yellow for misses.
      *
      * @param board The game board to print.
      */
@@ -208,9 +219,25 @@ public class BattleshipGame {
         for (int row = 0; row < board.length; row++) {
             System.out.printf("%2d", row);
             for (char cell : board[row]) {
-                System.out.printf("%2s", cell);
+                System.out.print(" " + colorCell(cell));
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Returns a color-coded string for a board cell character.
+     *
+     * @param cell The cell character to colorize.
+     * @return The cell wrapped in the appropriate ANSI color code.
+     */
+    private static String colorCell(char cell) {
+        return switch (cell) {
+            case '~' -> Color.ANSI_CYAN + cell + Color.ANSI_RESET;
+            case 'S' -> Color.ANSI_GREEN + cell + Color.ANSI_RESET;
+            case 'X' -> Color.ANSI_RED + cell + Color.ANSI_RESET;
+            case 'O' -> Color.ANSI_YELLOW + cell + Color.ANSI_RESET;
+            default -> String.valueOf(cell);
+        };
     }
 }

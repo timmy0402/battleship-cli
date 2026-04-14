@@ -131,26 +131,26 @@ public class Battleship {
             boolean placed = false;
 
             while (!placed) {
-                System.out.printf("Place your %s (size %d)%n", s.getName(), s.getSize());
-                System.out.print("Enter starting row and column (row col): ");
+                System.out.printf(Color.ANSI_CYAN + "Place your %s (size %d)" + Color.ANSI_RESET + "%n", s.getName(), s.getSize());
+                System.out.print(Color.ANSI_YELLOW + "Enter starting row and column (row col): " + Color.ANSI_RESET);
                 int startRow = userInput.nextInt();
                 int startCol = userInput.nextInt();
 
-                System.out.print("Horizontal or Vertical? (H/V): ");
+                System.out.print(Color.ANSI_YELLOW + "Horizontal or Vertical? (H/V): " + Color.ANSI_RESET);
                 String orient = userInput.next().toUpperCase();
                 boolean horizontal = orient.equals("H");
 
                 // Validate bounds
                 if (horizontal && startCol + s.getSize() > size) {
-                    System.out.println("Ship goes out of bounds horizontally. Try again.");
+                    System.out.println(Color.ANSI_RED + "Ship goes out of bounds horizontally. Try again." + Color.ANSI_RESET);
                     continue;
                 }
                 if (!horizontal && startRow + s.getSize() > size) {
-                    System.out.println("Ship goes out of bounds vertically. Try again.");
+                    System.out.println(Color.ANSI_RED + "Ship goes out of bounds vertically. Try again." + Color.ANSI_RESET);
                     continue;
                 }
                 if (startRow < 0 || startRow >= size || startCol < 0 || startCol >= size) {
-                    System.out.println("Starting position is out of bounds. Try again.");
+                    System.out.println(Color.ANSI_RED + "Starting position is out of bounds. Try again." + Color.ANSI_RESET);
                     continue;
                 }
 
@@ -169,7 +169,7 @@ public class Battleship {
                 }
 
                 if (overlap) {
-                    System.out.println("Overlaps with another ship. Try again.");
+                    System.out.println(Color.ANSI_RED + "Overlaps with another ship. Try again." + Color.ANSI_RESET);
                     continue;
                 }
 
@@ -180,7 +180,7 @@ public class Battleship {
                 }
                 placed = true;
 
-                System.out.printf("%s placed successfully!%n", s.getName());
+                System.out.printf(Color.ANSI_GREEN + "%s placed successfully!" + Color.ANSI_RESET + "%n", s.getName());
 
                 // Print the board so the user can see where their ships are
                 printBoard(board);
@@ -203,10 +203,29 @@ public class Battleship {
         for (int row = 0; row < board.length; row++) {
             System.out.printf("%2d", row);
             for (char cell : board[row]) {
-                System.out.printf("%2s", cell);
+                System.out.print(" " + colorCell(cell));
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Returns a color-coded string for a board cell character.
+     *
+     * @param cell The cell character to colorize.
+     * @return The cell wrapped in the appropriate ANSI color code.
+     */
+    private String colorCell(char cell) {
+        char water = symbolMap.get("water");
+        char ship = symbolMap.get("ship");
+        char hit = symbolMap.get("hit");
+        char miss = symbolMap.get("miss");
+
+        if (cell == water) return Color.ANSI_CYAN + cell + Color.ANSI_RESET;
+        if (cell == ship) return Color.ANSI_GREEN + cell + Color.ANSI_RESET;
+        if (cell == hit) return Color.ANSI_RED + cell + Color.ANSI_RESET;
+        if (cell == miss) return Color.ANSI_YELLOW + cell + Color.ANSI_RESET;
+        return String.valueOf(cell);
     }
 
     /**
@@ -225,9 +244,9 @@ public class Battleship {
         for (Ship s : comShips) {
             if (s.hit(row, col)) {
                 board[row][col] = symbolMap.get("hit");
-                System.out.println("Hit!");
+                System.out.println(Color.ANSI_RED + "Hit!" + Color.ANSI_RESET);
                 if (s.isSunk()) {
-                    System.out.printf("You sunk the computer's %s!%n", s.getName());
+                    System.out.printf(Color.ANSI_GREEN + "You sunk the computer's %s!" + Color.ANSI_RESET + "%n", s.getName());
                 }
                 return;
             }
@@ -235,7 +254,7 @@ public class Battleship {
 
         // No ship was hit
         board[row][col] = symbolMap.get("miss");
-        System.out.println("Missed");
+        System.out.println(Color.ANSI_YELLOW + "Missed" + Color.ANSI_RESET);
     }
 
     /**
@@ -258,14 +277,14 @@ public class Battleship {
             row = rand.nextInt(size);
         }
 
-        System.out.printf("Computer shoots (%d, %d): ", col, row);
+        System.out.printf(Color.ANSI_PURPLE + "Computer shoots (%d, %d): " + Color.ANSI_RESET, col, row);
 
         for (Ship s : userShips) {
             if (s.hit(row, col)) {
                 board[row][col] = hit;
-                System.out.println("Hit!");
+                System.out.println(Color.ANSI_RED + "Hit!" + Color.ANSI_RESET);
                 if (s.isSunk()) {
-                    System.out.printf("Computer sunk your %s!%n", s.getName());
+                    System.out.printf(Color.ANSI_RED + "Computer sunk your %s!" + Color.ANSI_RESET + "%n", s.getName());
                 }
                 return;
             }
@@ -273,7 +292,7 @@ public class Battleship {
 
         // No ship was hit
         board[row][col] = miss;
-        System.out.println("Missed");
+        System.out.println(Color.ANSI_YELLOW + "Missed" + Color.ANSI_RESET);
     }
 
     /**
@@ -369,7 +388,7 @@ public class Battleship {
      */
     public void setSize(int userSize) {
         if (userSize < 7) {
-            System.out.println("Warning: board size below 7 may be too small for the standard fleet.");
+            System.out.println(Color.ANSI_YELLOW + "Warning: board size below 7 may be too small for the standard fleet." + Color.ANSI_RESET);
         }
         size = userSize;
     }
